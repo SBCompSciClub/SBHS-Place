@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
-import configuration from './configuration.json'
+import configuration from './configuration.json';
+import { Jumbotron, Button } from 'reactstrap';
 class App extends Component
 {
     constructor()
@@ -11,12 +12,25 @@ class App extends Component
         this.firebaseInitialize = this.firebaseInitialize.bind(this);
         this.firebaseSetData = this.firebaseSetData.bind(this);
         this.firebaseGetData = this.firebaseGetData.bind(this);
-
-
+        /**
+         * Default Public Variables
+         */
+        this.update = false;
+        this.cellWidth = 100;
+        this.cellHeight = 100;
+        this.max = 6;
+        this.perRow = 2;
+        /**
+         * Initialize Firebase
+         */
         this.firebaseInitialize(configuration);
         this.firebaseGetData("/private/", (e) =>
         {
-            console.log(e);
+            this.update = e.update;
+            this.cellWidth = e.cell.width;
+            this.cellHeight = e.cell.height;
+            this.max = e.cell.max;
+            this.perRow = e.cell.perRow;
         });
     }
     firebaseInitialize(configuration)
@@ -35,7 +49,15 @@ class App extends Component
     {
         return (
             <div className="App">
-                Shivan
+                <Jumbotron>
+                <h1 className="display-3">Hello, world!</h1>
+                <p className="lead">This is a simple hero unit, a simple Jumbotron-style component for calling extra attention to featured content or information.</p>
+                <hr className="my-2" />
+                <p>It uses utility classes for typgraphy and spacing to space content out within the larger container.</p>
+                <p className="lead">
+                  <Button color="primary">Learn More</Button>
+                </p>
+              </Jumbotron>
             </div>
         );
     }
