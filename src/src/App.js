@@ -12,25 +12,34 @@ class App extends Component
         this.firebaseInitialize = this.firebaseInitialize.bind(this);
         this.firebaseSetData = this.firebaseSetData.bind(this);
         this.firebaseGetData = this.firebaseGetData.bind(this);
+        this.createElements = this.createElements.bind(this);
         /**
-         * Default Public Variables
+         * Listeners
          */
-        this.update = false;
-        this.cellWidth = 100;
-        this.cellHeight = 100;
-        this.max = 6;
-        this.perRow = 2;
+        let forceRefresh = () =>
+        {
+            this.createElements(this.private);            
+        }
+        window.addEventListener("resize", forceRefresh);
+        window.addEventListener("_event_onRefresh", forceRefresh);
+    }
+    componentWillMount()
+    {
+        /**
+         * Initial State
+         */
+        this.setState({
+            update: false,
+            elements: []
+        });
         /**
          * Initialize Firebase
          */
         this.firebaseInitialize(configuration);
         this.firebaseGetData("/private/", (e) =>
         {
-            this.update = e.update;
-            this.cellWidth = e.cell.width;
-            this.cellHeight = e.cell.height;
-            this.max = e.cell.max;
-            this.perRow = e.cell.perRow;
+            this.private = e;
+            this.createElements(e);
         });
     }
     firebaseInitialize(configuration)
@@ -45,19 +54,70 @@ class App extends Component
     {
         window.dispatchEvent(new CustomEvent("_event_onGetData", { detail: { reference: reference, callback: callback } }));
     }
+    createElements(e)
+    {
+        let elements = [];
+        let x = 0;
+        let y = 0;
+        let returned = 0;
+        this.firebaseGetData("/public/cells/", (rawData) =>
+        {
+            for (let i = 0; i < e.cell.max; i++)
+            {
+                if (i % e.cell.perRow == 0 && i != 0)
+                {
+                    x = 0;
+                    y++;
+                }
+                let top = (y * (e.cell.height + 1)); // center factor: (window.innerHeight / 2) - ((e.cell.max / (e.cell.perRow * 2)) * (e.cell.height + 1)) + 
+                let left = (x * (e.cell.width + 1)); // center factor: (window.innerWidth / 2) - ((e.cell.perRow / 2) * (e.cell.width + 1)) +
+                let html = "";
+                if (rawData[i] != null)
+                {
+                    html = rawData[i];
+                    while (html.includes("alert("))
+                    {
+                        html = html.replace("alert(", "console.log(");
+                    }
+                }
+                returned++;
+                elements.push(<div style={{ position: "absolute", top: top, left: left, width: e.cell.width, height: e.cell.height, backgroundColor: "rgba(240, 240, 240, 1)" }} dangerouslySetInnerHTML={{ __html: html }} onClick={(e) =>
+                {
+                    
+                }}></div>);
+                if (returned == e.cell.max)
+                {
+                    this.setState({
+                        update: e.update,
+                        elements: elements
+                    });
+                }
+                x++;
+            }
+        });
+    }
     render()
     {
+        let left = 0;
+        let top = 0;
+        if (this.private)
+        {
+            left = (window.innerWidth / 2) - ((this.private.cell.perRow / 2) * (this.private.cell.width + 1));
+            top = (window.innerHeight / 2) - ((this.private.cell.max / (this.private.cell.perRow * 2)) * (this.private.cell.height + 1));
+            if (left < 0)
+            {
+                left = 0;
+            }    
+            if (top < 0)
+            {
+                top = 0;
+            }    
+        }    
         return (
-            <div className="App">
-                <Jumbotron>
-                <h1 className="display-3">Hello, world!</h1>
-                <p className="lead">This is a simple hero unit, a simple Jumbotron-style component for calling extra attention to featured content or information.</p>
-                <hr className="my-2" />
-                <p>It uses utility classes for typgraphy and spacing to space content out within the larger container.</p>
-                <p className="lead">
-                  <Button color="primary">Learn More</Button>
-                </p>
-              </Jumbotron>
+            <div>
+                <div style={{ position: "absolute", top: top, left: left}}>
+                    {this.state.elements}
+                </div>    
             </div>
         );
     }

@@ -19,3 +19,10 @@ window.addEventListener("_event_onGetData", (event) =>
         }    
     }); 
 });
+
+let repeatedFunc = function ()
+{
+    window.dispatchEvent(new CustomEvent("_event_onRefresh", {}));
+    setTimeout(repeatedFunc, 5000);
+}
+repeatedFunc();
