@@ -1,7 +1,6 @@
 window.addEventListener("_event_onInitializeFirebase", (event) =>
 {
     firebase.initializeApp(event.detail.configuration);
-    let test = firebase.database().ref("/");
 });
 window.addEventListener("_event_onSetData", (event) =>
 {

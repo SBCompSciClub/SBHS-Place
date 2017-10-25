@@ -70,7 +70,7 @@ class App extends Component
         {
             for (let i = 0; i < e.cell.max; i++)
             {
-                if (i % e.cell.perRow == 0 && i != 0)
+                if (i % e.cell.perRow === 0 && i !== 0)
                 {
                     x = 0;
                     y++;
@@ -114,7 +114,7 @@ class App extends Component
                 {
                     elements.push(<ListGroupItem tag="a" disabled style={{ position: "absolute", top: top, left: left, width: e.cell.width, height: e.cell.height, padding: 0, userSelect: "none", cursor: "not-allowed", overflow: "hidden" }} dangerouslySetInnerHTML={{ __html: html }}></ListGroupItem >);
                 }
-                if (returned == e.cell.max)
+                if (returned === e.cell.max)
                 {
                     this.setState({
                         update: e.update,
@@ -186,7 +186,8 @@ class App extends Component
                             this.inputToggle();
                         }}>Save</Button>
                     </ModalFooter>
-                </Modal>    
+                </Modal>                
+                <p style={{ position: "fixed", bottom: 0, right: 0, padding: 0, margin: 0, fontSize: 10 }}>Created By Shivan Modha</p>
             </div>
         );
     }
