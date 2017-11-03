@@ -2,3 +2,4 @@
 * text=auto
 src/public/bootstrap-4.0.0/* linguist-vendored
 src/src/bootstrap-4.0.0/* linguist-vendored
+build/* linguist-vendored
